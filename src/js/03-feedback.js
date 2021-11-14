@@ -2,16 +2,17 @@ import throttle from 'lodash.throttle';
 //import '../css/common.css';
 //import '../css/feedback-form.css';
 
-const STORAGE_KEY = 'feedback-msg';
+const STORAGE_KEY = 'feedback-form-state';
 
 const refs = {
-  form: document.querySelector('.js-feedback-form'),
-  textarea: document.querySelector('.js-feedback-form  textarea'),
+  form: document.querySelector('.feedback-form'),
+  textarea: document.querySelector('.feedback-form  textarea'),
+  inputEmail: document.querySelector('.feedback-form  input'),
 };
 
 refs.form.addEventListener('submit', onFormSubmit);
 refs.textarea.addEventListener('input', throttle(onTextareaInput, 200));
-
+refs.inputEmail.addEventListener('input', throttle(onTextareaInput, 200));
 populateTextarea();
 
 /*
@@ -35,7 +36,8 @@ function onFormSubmit(evt) {
 function onTextareaInput(evt) {
   const message = evt.target.value;
 
-  localStorage.setItem(STORAGE_KEY, message);
+  const a = JSON.stringify(formData);
+  localStorage.setItem(STORAGE_KEY, a);
 }
 
 /*
@@ -43,23 +45,25 @@ function onTextareaInput(evt) {
  * - Если там что-то было, обновляем DOM
  */
 function populateTextarea() {
-  const savedMessage = localStorage.getItem(STORAGE_KEY);
-
+  const savedMessage = JSON.parse(localStorage.getItem(STORAGE_KEY)); ;
+//console.log(savedMessage);
   if (savedMessage) {
-    refs.textarea.value = savedMessage;
+    refs.textarea.value = savedMessage.message;
+    refs.inputEmail.value = savedMessage.email;
+
   }
 }
 
 // Домой
 // сделать так чтобы сохраняло не только сообщение но и имя, и все в одном обьекте
 
-// const formData = {};
+const formData = {};
 
-// refs.form.addEventListener('input', e => {
-//   // console.log(e.target.name);
-//   // console.log(e.target.value);
+refs.form.addEventListener('input', e => {
+  // console.log(e.target.name);
+  // console.log(e.target.value);
 
-//   formData[e.target.name] = e.target.value;
+  formData[e.target.name] = e.target.value;
 
-//   console.log(formData);
-// });
+  console.log(formData);
+});
